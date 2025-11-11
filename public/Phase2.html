@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Insurance | Phase 2: Data Modeling</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+    .sidebar h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #2563eb;
+      border-left: 5px solid #93c5fd;
+    }
+
+    /* Main content */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 18px;
+    }
+    .navbar .logout-btn {
+      background-color: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .navbar .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    /* Dashboard grid */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: left;
+      transition: transform 0.2s ease;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card h3 {
+      color: #1e3a8a;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .table-list button {
+      display: block;
+      margin: 5px 0;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .table-list button:hover {
+      background-color: #1e40af;
+    }
+
+    /* Query section */
+    /* Query section */
+  .query-section {
+    background: white;
+    margin: 20px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 700px; /* fix height */
+  }
+
+  .query-section h3 {
+    color: #1e3a8a;
+  }
+
+  /* Scrollable container for table */
+  .table-container {
+    flex-grow: 1;
+    overflow: auto;  /* allows both directions to scroll */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+
+  #result-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* helps trigger horizontal scroll */
+  }
+
+  #result-table th, #result-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    white-space: nowrap; /* prevent word wrap */
+    text-align: left;
+  }
+
+  #result-table th {
+    background-color: #1e3a8a;
+    color: white;
+    position: sticky;
+    top: 0; /* keep header visible while scrolling */
+    z-index: 1;
+  }
+  .table-list button.active {
+  background-color: #16a34a; /* green highlight or any color you prefer */
+  color: white;
+}
+
+.custom-query-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  #custom-sql {
+    width: 100%;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .run-query-btn {
+    align-self: flex-start;
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+
+  .run-query-btn:hover {
+    background-color: #2563eb;
+  }
+
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Project Phases</h2>
+    <a href="dashboard.html">Phase 1: Data Acquisition</a>
+    <a href="phase2.html" class="active">Phase 2: Data Modeling</a>
+    <a href="phase3.html">Phase 3: Automation</a>
+    <a href="phase4.html">Phase 4: Security & Sharing</a>
+    <a href="phase5.html">Phase 5: Visualization</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="navbar">
+      <span>PHASE 2: Data Modeling & Star Schema</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="dashboard">
+      <div class="card">
+        <h3>📘 Dimension Tables</h3>
+        <div class="table-list" id="dim-tables">Loading...</div>
+      </div>
+
+      <div class="card">
+        <h3>📗 Fact Tables</h3>
+        <div class="table-list" id="fact-tables">Loading...</div>
+      </div>
+    </div>
+
+    <div class="query-section">
+      <h3>🧪 Query the Tables</h3>
+      <p>Use this tool to query the created DIM and FACT tables dynamically:</p>
+       <!-- Custom Query Box -->
+    <div class="custom-query-box">
+      <textarea id="custom-sql" placeholder="Enter your SQL query here (e.g. SELECT * FROM DIMCUSTOMER LIMIT 10);" rows="3"></textarea>
+      <button class="run-query-btn" onclick="runCustomQuery()">▶️ Run Query</button>
+    </div>
+      <div class="table-container">
+        <table id="result-table"></table>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("You have been logged out!");
+      window.location.href = "/";
+    }
+
+    async function loadTables() {
+      const res = await fetch("/api/get-tables");
+      const data = await res.json();
+
+      const dimDiv = document.getElementById("dim-tables");
+      const factDiv = document.getElementById("fact-tables");
+
+      dimDiv.innerHTML = "";
+      factDiv.innerHTML = "";
+
+      data.dimensions.forEach(table => {
+        const btn = document.createElement("button");
+        btn.textContent = table;
+        btn.onclick = () => queryTable(table);
+        dimDiv.appendChild(btn);
+      });
+
+      data.facts.forEach(table => {
+        const btn = document.createElement("button");
+        btn.textContent = table;
+        btn.onclick = () => queryTable(table);
+        factDiv.appendChild(btn);
+      });
+    }
+
+    async function queryTable(tableName) {
+      const res = await fetch(`/api/query?table=${tableName}`);
+      const data = await res.json();
+      renderTable(data);
+    }
+
+    function renderTable(data) {
+      const table = document.getElementById("result-table");
+      if (data.length === 0) {
+        table.innerHTML = "<tr><td>No data found</td></tr>";
+        return;
+      }
+
+      const headers = Object.keys(data[0]);
+      let html = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+      data.forEach(row => {
+        html += "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join("") + "</tr>";
+      });
+      table.innerHTML = html;
+    }
+
+    loadTables();
+
+    // Add event listener for button clicks
+  document.addEventListener('click', function (e) {
+    if (e.target.tagName === 'BUTTON' && e.target.closest('.table-list')) {
+      // Remove active class from all buttons in both lists
+      document.querySelectorAll('.table-list button').forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      e.target.classList.add('active');
+    }
+  });
+
+  async function runCustomQuery() {
+    const sql = document.getElementById('custom-sql').value.trim();
+    if (!sql) {
+      alert("Please enter a SQL query!");
+      return;
+    }
+
+    try {
+      const res = await fetch('/run-custom-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: sql })
+      });
+
+      const data = await res.json();
+
+      const table = document.getElementById('result-table');
+      table.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        table.innerHTML = '<tr><td>No results found.</td></tr>';
+        return;
+      }
+
+      const headers = Object.keys(data[0]);
+      const headerRow = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+      const rows = data.map(row =>
+        `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`
+      ).join('');
+
+      table.innerHTML = headerRow + rows;
+    } catch (err) {
+      console.error(err);
+      alert("Error executing query.");
+    }
+  }
+
+  </script>
+</body>
+</html>

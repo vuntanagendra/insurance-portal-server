@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Insurance | Analytics Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #2563eb;
+      border-left: 5px solid #93c5fd;
+    }
+
+    /* Main content */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 18px;
+    }
+
+    .navbar .logout-btn {
+      background-color: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .navbar .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    /* Dashboard grid */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .progress-bar {
+        width: 100%;
+        background-color: #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 10px;
+        margin-top: 8px;
+    }
+
+    .progress {
+        height: 10px;
+        width: 0%;
+        transition: width 0.5s ease, background-color 0.5s ease;
+        border-radius: 10px;
+    }
+
+    /* Color states */
+    .progress.green {
+        background-color: #4caf50; /* Safe */
+    }
+    .progress.yellow {
+        background-color: #ffca28; /* Warning */
+    }
+    .progress.red {
+        background-color: #f44336; /* Critical */
+    }
+
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align:left;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h3 {
+      color: #1e3a8a;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .env-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 10px;
+        column-gap: 15px;
+        margin-top: 10px;
+    }
+    .env-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.95rem;
+    }
+    .env-icon {
+        font-size: 1.2rem;
+    }
+    .env-label {
+        font-weight: 600;
+        color: #333;
+    }
+    .env-value {
+        font-weight: 500;
+        color: #007bff;
+    }
+
+    .stage-list {
+        margin-top: 10px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 0.9em;
+        max-height: 120px;
+        overflow-y: auto;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+    .stage-list ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .stage-list li {
+        padding: 4px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pipe-details {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-top: 10px;
+  font-size: 0.95em;
+  line-height: 1.6;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
+}
+
+.pipe-details p {
+  margin: 6px 0;
+}
+
+.status-running {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.status-paused {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.status-error {
+  color: #f44336;
+  font-weight: bold;
+}
+
+
+.pipe-test, .pipe-actions {
+  margin-top: 10px;
+}
+
+#file-upload {
+  margin: 8px 0;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  margin: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.pipe-result {
+  margin-top: 15px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
+}
+
+.pipe-result span {
+  font-weight: bold;
+  color: #4caf50;
+}
+
+
+
+
+
+    /* Tableau placeholder */
+    .tableau-section {
+      background: white;
+      margin: 20px;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Project Phases</h2>
+    <a href="#" class="active">Phase 1: Data Acquisition</a>
+    <a href="Phase2.html">Phase 2: Data Modeling</a>
+    <a href="Phase3.html">Phase 3: Automation</a>
+    <a href="Phase4.html">Phase 4: Security & Sharing</a>
+    <a href="phase5.html">Phase 5: Visualization</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="navbar">
+      <span>Guardian Insurance - Claims Intelligence Dashboard</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Dashboard cards -->
+    <div class="dashboard">
+    <div class="card">
+        <h3>Snowflake Resource Monitor</h3>
+        <p><strong>Monitor:</strong> <span id="rm-name" style="color:blue;">Loading...</span></p>
+        <p><strong>Used Credits:</strong> <span id="rm-used" style="color:blue;">--</span> / <span id="rm-total" style="color:blue;">--</span></p>
+        <p><strong>Remaining:</strong> <span id="rm-remaining" style="color:blue;">--</span></p>
+        <p><strong>Cycle:</strong> <span id="rm-cycle" style="color:blue;">--</span> (<span id="rm-frequency" style="color:blue;">--</span>)</p>
+        <p><strong>Next Reset:</strong> <span id="rm-end" style="color:blue;">--</span></p>
+
+        <div class="progress-bar">
+            <div class="progress" id="rm-progress"></div>
+        </div>
+    </div>
+
+
+
+
+    <div class="card">
+        <h3>Snowflake Environment</h3>
+  <div class="env-grid">
+    <div class="env-item">
+      <span class="env-icon">🧑‍💼</span>
+      <span class="env-label">Role:</span>
+      <span id="sf-role" class="env-value">Loading...</span>
+    </div><br>
+    <div class="env-item">
+      <span class="env-icon">🏗️</span>
+      <span class="env-label">Warehouse:</span>
+      <span id="sf-warehouse" class="env-value">Loading...</span>
+    </div><br>
+    <div class="env-item">
+      <span class="env-icon">💾</span>
+      <span class="env-label">Database:</span>
+      <span id="sf-database" class="env-value">Loading...</span>
+    </div><br>
+    <div class="env-item">
+      <span class="env-icon">📂</span>
+      <span class="env-label">Schema:</span>
+      <span id="sf-schema" class="env-value">Loading...</span>
+    </div>
+  </div>
+</div>
+
+
+    <div class="card">
+        <h3>Stages for Raw Data</h3>
+        <p>Total Stages: <span id="stage-count">--</span></p>
+
+        <div class="stage-list">
+            <ul id="stage-names"></ul>
+        </div>
+
+        <div class="progress-bar">
+            <div id="stage-progress" class="progress"></div>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <h3>Snowpipe – Fraud Alerts</h3>
+        <div id="pipe-details" class="pipe-details">
+            <p><strong>Name:</strong> <span id="pipe-name">--</span></p>
+            <p><strong>Created On:</strong> <span id="pipe-created">--</span></p>
+            <p><strong>Status:</strong> <span id="pipe-status">--</span></p>
+            <p><strong>Last Load:</strong> <span id="pipe-lastload">--</span></p>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Tableau placeholder -->
+    <!-- <div class="tableau-section">
+      <h2>Fraud Detection Dashboard</h2>
+      <iframe src="https://public.tableau.com/views/GuardianFraudDashboard"></iframe>
+    </div> -->
+
+     <div class="tableau-section">
+      <h3>🧪 Snowpipe Test Utility</h3>
+        <p>Use this tool to simulate data ingestion and validate your Snowpipe setup.</p>
+
+        <div class="pipe-test">
+            <label for="file-upload"><strong>Upload Fraud File (CSV):</strong></label><br>
+            <input type="file" id="file-upload" accept=".csv">
+            <button id="upload-btn">📤 Upload to S3</button>
+        </div>
+
+        <div class="pipe-actions">
+            <button id="refresh-pipe">🔄 Refresh Pipe</button>
+            <button id="get-rowcount">📊 Get Row Count</button>
+        </div>
+
+        <div class="pipe-result">
+            <!-- <p><strong>Before Upload Count:</strong> <span id="before-count">--</span></p> -->
+            <p><strong>Total Row Count:</strong> <span id="after-count">--</span></p>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("You have been logged out!");
+      window.location.href = "/";
+    }
+
+   async function loadResourceMonitor() {
+  try {
+    const res = await fetch('/api/resource-monitor');
+    const data = await res.json();
+
+    if (data.name) {
+      document.getElementById('rm-name').textContent = data.name;
+      document.getElementById('rm-used').textContent = data.usedCredits;
+      document.getElementById('rm-total').textContent = data.creditQuota;
+      document.getElementById('rm-remaining').textContent = data.remainingCredits;
+      document.getElementById('rm-frequency').textContent = data.frequency;
+      document.getElementById('rm-cycle').textContent = new Date(data.startTime).toLocaleDateString();
+      document.getElementById('rm-end').textContent = data.endTime;
+
+      const progressBar = document.getElementById('rm-progress');
+      progressBar.style.width = `${data.percentUsed}%`;
+      progressBar.style.backgroundColor =
+        data.percentUsed > 100 ? '#e53935' :
+        data.percentUsed > 75 ? '#fbc02d' : '#4caf50';
+    }
+  } catch (err) {
+    console.error('Error loading resource monitor:', err);
+  }
+}
+
+loadResourceMonitor();
+setInterval(loadResourceMonitor, 60000);
+
+
+function updateProgressBar(usedPercent) {
+    const progress = document.querySelector('.progress');
+    progress.style.width = `${usedPercent}%`;
+
+    progress.classList.remove('green', 'yellow', 'red');
+
+    if (usedPercent < 75) {
+        progress.classList.add('green');
+    } else if (usedPercent < 100) {
+        progress.classList.add('yellow');
+    } else {
+        progress.classList.add('red');
+    }
+}
+
+async function loadEnvDetails() {
+  try {
+    const res = await fetch('/get-env-details');
+    const data = await res.json();
+
+    document.getElementById('sf-role').textContent = data.ROLE;
+    document.getElementById('sf-warehouse').textContent = data.WAREHOUSE;
+    document.getElementById('sf-database').textContent = data.DATABASE;
+    document.getElementById('sf-schema').textContent = data.SCHEMA;
+  } catch (err) {
+    console.error('Error loading environment details:', err);
+  }
+}
+loadEnvDetails();
+// Auto-refresh every 60 seconds
+setInterval(loadEnvDetails, 60000);
+
+async function loadStages() {
+  try {
+    const res = await fetch('/get-stages');
+    const stages = await res.json();
+
+    document.getElementById('stage-count').textContent = stages.length;
+
+    const ul = document.getElementById('stage-names');
+    ul.innerHTML = '';
+    stages.forEach(stage => {
+      const li = document.createElement('li');
+      li.textContent = stage.name;
+      ul.appendChild(li);
+    });
+
+    // Progress bar color & length
+    const progress = document.getElementById('stage-progress');
+    const percent = Math.min((stages.length / 5) * 100, 100); // assuming 5 expected stages
+    progress.style.width = percent + '%';
+    progress.style.backgroundColor =
+      percent < 50 ? '#ff9800' : percent < 100 ? '#2196f3' : '#4caf50';
+  } catch (err) {
+    console.error('Error loading stages:', err);
+  }
+}
+
+loadStages();
+setInterval(loadStages, 60000); // refresh every 1 min
+
+
+
+async function loadPipeDetails() {
+  try {
+    const res = await fetch('/get-pipes');
+    const pipes = await res.json();
+
+    if (pipes.length > 0) {
+      const pipe = pipes[0]; // FRAUDALERTPIPE
+      document.getElementById('pipe-name').textContent = pipe.name;
+      document.getElementById('pipe-created').textContent = pipe.created_on;
+      document.getElementById('pipe-lastload').textContent = pipe.last_load;
+
+      // Status display with emoji + color
+      const statusEl = document.getElementById('pipe-status');
+      let emoji = '';
+      let cssClass = '';
+
+      switch (pipe.status.toUpperCase()) {
+        case 'RUNNING':
+          emoji = '✅';
+          cssClass = 'status-running';
+          break;
+        case 'STOPPED':
+        case 'PAUSED':
+          emoji = '⚠️';
+          cssClass = 'status-paused';
+          break;
+        default:
+          emoji = '❌';
+          cssClass = 'status-error';
+      }
+
+      statusEl.textContent = `${pipe.status} ${emoji}`;
+      statusEl.className = cssClass;
+    }
+  } catch (err) {
+    console.error('Error loading pipe details:', err);
+  }
+}
+
+loadPipeDetails();
+setInterval(loadPipeDetails, 60000);
+
+
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  const file = document.getElementById('file-upload').files[0];
+  if (!file) return alert("Please select a file first!");
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch('/upload-s3', { method: 'POST', body: formData });
+  const result = await res.json();
+  alert(result.message || "File uploaded successfully ✅");
+});
+
+document.getElementById('refresh-pipe').addEventListener('click', async () => {
+  const res = await fetch('/refresh-pipe', { method: 'POST' });
+  const result = await res.json();
+  alert(result.message || "Pipe refreshed successfully 🔄");
+});
+
+document.getElementById('get-rowcount').addEventListener('click', async () => {
+  const res = await fetch('/get-rowcount');
+  const data = await res.json();
+//   document.getElementById('before-count').textContent = data.before_count || '--';
+  document.getElementById('after-count').textContent = data.after_count || '--';
+});
+
+  </script>
+</body>
+</html>

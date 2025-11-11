@@ -1,0 +1,285 @@
+<!-- <div class='tableauPlaceholder' id='viz1762861942754' style='position: relative'>
+<noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;na&#47;naga_pb&#47;Sheet1&#47;1_rss.png' 
+    style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'>
+        <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> 
+        <param name='site_root' value='' /><param name='name' value='naga_pb&#47;Sheet1' /><param name='tabs' value='no' />
+        <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;na&#47;naga_pb&#47;Sheet1&#47;1.png' /> <param name='animate_transition' value='yes' />
+        <param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' />
+        <param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>               
+         <script type='text/javascript'>                   
+          var divElement = document.getElementById('viz1762861942754');                    
+          var vizElement = divElement.getElementsByTagName('object')[0];                    
+          vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    
+          var scriptElement = document.createElement('script');                   
+           scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    
+           vizElement.parentNode.insertBefore(scriptElement, vizElement);                
+           </script> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Insurance | Phase 5: Visualization Using Tableau</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #2563eb;
+      border-left: 5px solid #93c5fd;
+    }
+
+    /* Main content */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .navbar {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 18px;
+    }
+
+    .logout-btn {
+      background-color: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    .content {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Info card */
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .info-left h3 {
+      color: #1e3a8a;
+      font-size: 20px;
+      margin: 0 0 8px 0;
+      font-weight: 600;
+    }
+
+    .info-left p {
+      margin: 4px 0;
+      font-size: 15px;
+      color: #444;
+    }
+
+    .info-right img {
+      display: block;
+      border-radius: 10px;
+    }
+
+    /* Tableau section */
+    .tableau-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .tableau-placeholder {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      background: #fff;
+      margin-bottom: 20px;
+    }
+
+    .view-btn {
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .view-btn:hover {
+      background: #1e40af;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .info-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Project Phases</h2>
+    <a href="dashboard.html">Phase 1: Data Acquisition</a>
+    <a href="phase2.html">Phase 2: Data Modeling</a>
+    <a href="phase3.html">Phase 3: Automation</a>
+    <a href="phase4.html">Phase 4: Security & Sharing</a>
+    <a href="phase5.html" class="active">Phase 5: Visualization</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="navbar">
+      <span>PHASE 5: Visualization Using Tableau</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="content">
+
+      <!-- Info Section -->
+      <div class="info-card">
+        <div class="info-left">
+          <h3>📈 Tableau Connection Overview</h3>
+          <p>Connected to <strong>Snowflake</strong> using <strong>Live Mode</strong> for real-time data visualization.</p>
+          <p>Dashboard: <strong>Insurance Claims Fraud Detection & Settlement Analytics</strong></p>
+          <button class="view-btn" onclick="window.open('https://public.tableau.com/views/FinalStorylineTableauproject/Story1', '_blank')">
+          🌐 View on Tableau Public
+        </button>
+        </div>
+        <div class="info-right">
+          <img src="tableau_logo.png" 
+     alt="Tableau Logo" 
+     width="120"
+     height="60" 
+     style="border-radius:6px;"/>
+
+        </div>
+      </div>
+
+      <!-- Tableau Embed Section -->
+      <div class="tableau-section">
+        <h3>📊 Embedded Tableau Dashboard</h3> <!-- View on Tableau Public Button -->
+        
+        <div class='tableauPlaceholder tableau-placeholder' id='viz1762885118966' style='position: relative'>
+          <noscript>
+            <a href='#'>
+              <img alt='Insurance Claims Fraud Detection &amp; Settlement Analytics.'
+                   src='https://public.tableau.com/static/images/Fi/FinalStorylineTableauproject/Story1/1_rss.png'
+                   style='border:none;' />
+            </a>
+          </noscript>
+          <object class='tableauViz' style='display:none;'>
+            <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+            <param name='embed_code_version' value='3' />
+            <param name='site_root' value='' />
+            <param name='name' value='FinalStorylineTableauproject/Story1' />
+            <param name='tabs' value='no' />
+            <param name='toolbar' value='yes' />
+            <param name='static_image'
+                   value='https://public.tableau.com/static/images/Fi/FinalStorylineTableauproject/Story1/1.png' />
+            <param name='animate_transition' value='yes' />
+            <param name='display_static_image' value='yes' />
+            <param name='display_spinner' value='yes' />
+            <param name='display_overlay' value='yes' />
+            <param name='display_count' value='yes' />
+            <param name='language' value='en-US' />
+            <param name='filter' value='publish=yes' />
+          </object>
+        </div>
+
+       
+      </div>
+
+      <p class="footer-note">
+        Visualization powered by <strong>Tableau Public</strong> — integrated with <strong>Snowflake</strong> for live data updates.
+      </p>
+    </div>
+  </div>
+
+  <!-- Tableau Embed Script -->
+  <script type='text/javascript'>
+    function logout() {
+      alert('You have been logged out!');
+      window.location.href = '/';
+    }
+
+    var divElement = document.getElementById('viz1762885118966');
+    var vizElement = divElement.getElementsByTagName('object')[0];
+    vizElement.style.width = '100%';
+    vizElement.style.height = '800px';
+    var scriptElement = document.createElement('script');
+    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+    vizElement.parentNode.insertBefore(scriptElement, vizElement);
+  </script>
+</body>
+</html>

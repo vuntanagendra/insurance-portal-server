@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Insurance | Phase 4: Security & Sharing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+    .sidebar h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #2563eb;
+      border-left: 5px solid #93c5fd;
+    }
+
+    /* Main layout */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .navbar {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 18px;
+    }
+    .logout-btn {
+      background-color: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .logout-btn:hover { background-color: #dc2626; }
+
+    .content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .section h3 {
+      color: #1e3a8a;
+      margin-top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    select, button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: 'Poppins';
+      font-size: 14px;
+    }
+    .context-select {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .set-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .set-btn:hover { background-color: #1e40af; }
+
+    .card {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background-color: #1e3a8a;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .table-container {
+      max-height: 300px;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .result-container-masking {
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: auto;
+  max-height: 300px;
+  border: 1px solid #ddd;
+}
+
+.hide-btn {
+  background-color: #f87171;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  float: right;
+}
+.hide-btn:hover {
+  background-color: #dc2626;
+}
+
+  .result-container-rls {
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: auto;
+  max-height: 300px;
+  border: 1px solid #ddd;
+}
+
+    .create-share-btn {
+      background: #22c55e;
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .create-share-btn:hover { background: #15803d; }
+
+    /* Make clickable names stand out */
+.clickable {
+  color: #2563eb;           /* Primary blue (matches your theme) */
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.clickable:hover {
+  color: #1e40af;           /* Slightly darker on hover */
+  text-decoration: underline;
+}
+#rls-table tr:hover td {
+  background-color: #f6f4f3;   /* Light gray hover */
+}
+.share-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.share-controls input,
+.share-controls select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.result-container-share {
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: auto;
+  max-height: 250px;
+  border: 1px solid #ddd;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Project Phases</h2>
+    <a href="dashboard.html">Phase 1: Data Acquisition</a>
+    <a href="phase2.html">Phase 2: Data Modeling</a>
+    <a href="phase3.html">Phase 3: Automation</a>
+    <a href="phase4.html" class="active">Phase 4: Security & Sharing</a>
+    <a href="phase5.html">Phase 5: Visualization</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="navbar">
+      <span>PHASE 4: Security, Governance & Sharing</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="content">
+
+      <!-- CONTEXT SELECTION -->
+      <div class="section">
+        <h3>⚙️ Set Snowflake Context</h3>
+        <div class="context-select">
+          <select id="warehouse-select"></select>
+          <select id="database-select"></select>
+          <select id="schema-select"></select>
+          <select id="role-select"></select>
+          <button class="set-btn" onclick="setContext()">Set Context</button>
+        </div>
+        <p id="context-status"><em>No context selected</em></p>
+      </div>
+
+      <!-- MASKING POLICIES -->
+      <div class="section">
+        <h3>🔒 Masking Policies</h3>
+        <div class="table-container"><table id="masking-table"></table></div>
+        <div id="masking-preview" class="result-container-masking"></div>
+      </div>
+
+      <!-- ROW POLICIES -->
+      <div class="section">
+        <h3>📊 Row Access Policies</h3>
+        <div class="table-container"><table id="row-table"></table></div>
+        <div id="rls-preview" class="result-container-rls"></div>
+      </div>
+
+      <!-- SECURE SHARES -->
+      <!-- SECURE DATA SHARING -->
+<div class="section">
+  <h3>🔐 Secure Data Sharing</h3>
+  
+  <div class="share-controls">
+    <label>Select Object to Share:</label>
+    <select id="share-object-type">
+      <option value="DATABASE">Database</option>
+      <option value="SCHEMA">Schema</option>
+      <option value="TABLE">Table</option>
+      <option value="VIEW">View</option>
+    </select>
+
+    <input type="text" id="object-name" placeholder="e.g. INSURANCE_GROUP_DB.INSURANCE_GROUP_SCHEMA.FACTCLAIMS" />
+
+    <input type="text" id="receiver-id" placeholder="Receiver Account Identifier (e.g. ABC12345)" />
+
+    <button class="refresh-btn" onclick="createShare()">Create Secure Share</button>
+  </div>
+
+  <h4 style="margin-top:15px;">Existing Shares <button class="refresh-btn" onclick="loadShares()">Refresh</button></h4>
+  <div class="table-container">
+    <table id="shares-table"></table>
+  </div>
+  <div id="share-status" class="result-container-share"></div>
+</div>
+
+
+    </div>
+  </div>
+
+  <script>
+    async function logout() {
+      alert("You have been logged out!");
+      window.location.href = "/";
+    }
+
+    // --- Populate dropdowns dynamically ---
+    async function populateDropdown(endpoint, elementId) {
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      const select = document.getElementById(elementId);
+      select.innerHTML = data.map(d => `<option value="${d}">${d}</option>`).join("");
+    }
+
+    async function loadContextOptions() {
+      await populateDropdown("/api/get-warehouses", "warehouse-select");
+      await populateDropdown("/api/get-databases", "database-select");
+      await populateDropdown("/api/get-schemas", "schema-select");
+      await populateDropdown("/api/get-roles", "role-select");
+    }
+
+    async function setContext() {
+      const warehouse = document.getElementById("warehouse-select").value;
+      const database = document.getElementById("database-select").value;
+      const schema = document.getElementById("schema-select").value;
+      const role = document.getElementById("role-select").value;
+
+      const res = await fetch("/api/set-context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ warehouse, database, schema, role })
+      });
+
+      const msg = await res.text();
+      document.getElementById("context-status").innerText = msg || "Context set successfully!";
+    }
+
+    // Load context dropdowns on page load
+    loadContextOptions();
+
+
+    async function loadMaskingPolicies() {
+  const res = await fetch("/api/show-masking-policies");
+  const data = await res.json();
+  const tbl = document.getElementById("masking-table");
+
+  if (!data.length) {
+    tbl.innerHTML = "<tr><td>No Masking Policies Found</td></tr>";
+    return;
+  }
+
+  const headers = ["name", "database", "schema", "expression", "applies_to", "owner"];
+  tbl.innerHTML = "<tr>" + headers.map(h => `<th>${h.toUpperCase()}</th>`).join("") + "</tr>";
+
+  data.forEach(row => {
+    const nameCell = `<td class="clickable" onclick="previewMaskedData('${row.name}')">${row.name}</td>`;
+    const rowHtml = "<tr>" + headers.map(h =>
+      (h === "name" ? nameCell : `<td>${row[h] || "--"}</td>`)).join("") + "</tr>";
+    tbl.innerHTML += rowHtml;
+  });
+}
+
+// Call on load
+loadMaskingPolicies();
+
+async function previewMaskedData(policyName) {
+  const container = document.getElementById("masking-preview");
+  container.innerHTML = `
+    <h4>🔍 Masking Policy Preview: ${policyName}
+      <button class="hide-btn" onclick="hidePreview('masking-preview')">Hide</button>
+    </h4>
+    <p>Loading preview...</p>
+  `;
+
+  const res = await fetch(`/api/preview-masked-data/${policyName}`);
+  if (!res.ok) {
+    container.innerHTML += `<p style="color:red;">Error fetching masked data.</p>`;
+    return;
+  }
+
+  const data = await res.json();
+  const tableName = data.table;
+  const sql = `SELECT * FROM ${tableName} LIMIT 10;`; // Fetch all columns
+
+  // Fetch full table preview (we’ll reuse your existing /run-query route)
+  const res2 = await fetch('run-query', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sql })
+  });
+
+  const rows = await res2.json();
+  renderPreviewTable(container, rows, tableName);
+}
+
+function renderPreviewTable(container, rows, tableName) {
+  if (!rows.length) {
+    container.innerHTML += "<p>No rows found.</p>";
+    return;
+  }
+  const headers = Object.keys(rows[0]);
+  let html = `
+    <p><strong>Table:</strong> ${tableName}</p>
+    <div class="table-container">
+      <table>
+        <tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
+        ${rows.map(r => `<tr>${headers.map(h => `<td>${r[h]}</td>`).join("")}</tr>`).join("")}
+      </table>
+    </div>
+  `;
+  container.innerHTML += html;
+}
+
+function hidePreview(id) {
+  const el = document.getElementById(id);
+  el.innerHTML = "";
+  el.scrollIntoView({ behavior: "smooth" });
+}
+
+// --- ROW ACCESS POLICIES ---
+async function loadRowPolicies() {
+  const res = await fetch("/api/show-row-policies");
+  const data = await res.json();
+  const tbl = document.getElementById("row-table");
+
+  if (!data.length) {
+    tbl.innerHTML = "<tr><td>No Row Access Policies Found</td></tr>";
+    return;
+  }
+
+  const headers = ["name", "database", "schema", "expression", "owner"];
+  tbl.innerHTML = "<tr>" + headers.map(h => `<th>${h.toUpperCase()}</th>`).join("") + "</tr>";
+
+  data.forEach(row => {
+    const nameCell = `<td class="clickable" onclick="previewRowPolicy('${row.name}')">${row.name}</td>`;
+    const rowHtml = "<tr>" + headers.map(h =>
+      (h === "name" ? nameCell : `<td>${row[h] || "--"}</td>`)).join("") + "</tr>";
+    tbl.innerHTML += rowHtml;
+  });
+}
+
+async function previewRowPolicy(policyName) {
+  const container = document.getElementById("rls-preview");
+  container.innerHTML = `
+    <h4>🔍 Row Policy Preview: ${policyName}
+      <button class="hide-btn" onclick="hidePreview('rls-preview')">Hide</button>
+    </h4>
+    <p>Loading filtered data...</p>
+  `;
+
+  const res = await fetch(`/api/preview-row-policy/${policyName}`);
+  if (!res.ok) {
+    container.innerHTML += `<p style="color:red;">Error fetching policy details.</p>`;
+    return;
+  }
+
+  const data = await res.json();
+  const sql = `SELECT * FROM ${data.table} LIMIT 10;`;
+  const res2 = await fetch('/run-query', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sql })
+  });
+
+  const rows = await res2.json();
+  renderPreviewTable(container, rows, data.table);
+}
+
+loadRowPolicies();
+
+/* ---------- Load all existing shares ---------- */
+async function loadShares() {
+  const res = await fetch('/api/show-shares');
+  const data = await res.json();
+  const tbl = document.getElementById('shares-table');
+
+  if (!data.length) {
+    tbl.innerHTML = '<tr><td>No Secure Shares Found</td></tr>';
+    return;
+  }
+
+  const headers = ['name', 'kind', 'owner', 'created_on', 'to', 'comment', 'action'];
+  tbl.innerHTML = '<tr>' + headers.map(h => `<th>${h.toUpperCase()}</th>`).join('') + '</tr>';
+
+  data.forEach(r => {
+    const rowHtml = `<tr>
+      <td>${r.name}</td>
+      <td>${r.kind}</td>
+      <td>${r.owner}</td>
+      <td>${r.created_on}</td>
+      <td>${r.to || '--'}</td>
+      <td>${r.comment || '--'}</td>
+      <td style="display: flex; align-items: center; gap: 8px; justify-content: flex-start; flex-wrap: nowrap;">
+  <button class="refresh-btn" onclick="viewGrants('${r.name}')">View Grants</button>
+  <button class="hide-btn" onclick="removeShareAccount('${r.name}', '${r.to}')">Remove</button>
+</td>
+
+    </tr>`;
+    tbl.innerHTML += rowHtml;
+  });
+}
+
+/* ---------- Create a new secure share ---------- */
+async function createShare() {
+  const objectType = document.getElementById('share-object-type').value;
+  const objectName = document.getElementById('object-name').value.trim();
+  const receiver = document.getElementById('receiver-id').value.trim();
+  const statusDiv = document.getElementById('share-status');
+
+  if (!objectName || !receiver) {
+    statusDiv.innerHTML = '<p style="color:red;">⚠️ Please fill all fields.</p>';
+    return;
+  }
+
+  statusDiv.innerHTML = '<p>⏳ Creating secure share...</p>';
+
+  try {
+    const res = await fetch('/api/create-share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ objectType, objectName, receiver })
+    });
+
+    const text = await res.text();
+    statusDiv.innerHTML = res.ok
+      ? `<p style="color:green;">${text}</p>`
+      : `<p style="color:red;">${text}</p>`;
+
+    loadShares();
+  } catch (err) {
+    statusDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+  }
+}
+
+/* ---------- Remove account from share ---------- */
+async function removeShareAccount(shareName, receiver) {
+  if (!receiver || receiver === '--') {
+    alert('⚠️ No account linked to this share.');
+    return;
+  }
+
+  const confirmRemove = confirm(`Remove ${receiver} from ${shareName}?`);
+  if (!confirmRemove) return;
+
+  try {
+    const res = await fetch('/api/remove-share-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ shareName, receiver })
+    });
+    const text = await res.text();
+    alert(text);
+    loadShares();
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+/* ---------- View Grants linked to a Share ---------- */
+async function viewGrants(shareName) {
+  const container = document.getElementById('share-status');
+  container.innerHTML = `
+    <h4>🔍 Grants for Share: ${shareName}
+      <button class="hide-btn" onclick="hidePreview('share-status')">Hide</button>
+    </h4>
+    <p>Loading grants...</p>
+  `;
+
+  try {
+    const sql = `SHOW GRANTS TO SHARE ${shareName};`;
+    const res = await fetch('/run-query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql })
+    });
+    const data = await res.json();
+
+    if (!data.length) {
+      container.innerHTML += "<p>No grants found for this share.</p>";
+      return;
+    }
+
+    const headers = Object.keys(data[0]);
+    let html = `
+      <div class="table-container">
+        <table>
+          <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+          ${data.map(r => `<tr>${headers.map(h => `<td>${r[h]}</td>`).join('')}</tr>`).join('')}
+        </table>
+      </div>
+    `;
+    container.innerHTML += html;
+  } catch (err) {
+    container.innerHTML = `<p style="color:red;">Error loading grants: ${err.message}</p>`;
+  }
+}
+
+/* ---------- Hide preview ---------- */
+function hidePreview(id) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  el.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ---------- Auto-load shares on page open ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  loadShares();
+});
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Insurance | Phase 3: Automation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+    .sidebar h2 { text-align: center; font-size: 20px; margin-bottom: 20px; }
+    .sidebar a {
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #2563eb;
+      border-left: 5px solid #93c5fd;
+    }
+
+    /* Main layout */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .navbar {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 18px;
+    }
+    .logout-btn {
+      background-color: #f87171;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .logout-btn:hover { background-color: #dc2626; }
+
+    .content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .section h3 {
+      margin-top: 0;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .refresh-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .refresh-btn:hover { background: #1e40af; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      min-width: 600px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      white-space: nowrap;
+      text-align: left;
+    }
+    th {
+      background-color: #1e3a8a;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-container {
+      max-height: 300px;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .task-card {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin: 10px 0;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+    .task-card p { margin: 4px 0; }
+
+    .status-success { color: #16a34a; font-weight: 600; }
+    .status-failed { color: #dc2626; font-weight: 600; }
+    .status-running { color: #2563eb; font-weight: 600; }
+
+    .clickable {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+}
+.clickable:hover {
+  text-decoration: underline;
+}
+
+.result-container-stream,
+.result-container-mv {
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: auto;
+  max-height: 300px;
+  border: 1px solid #ddd;
+}
+
+.hide-btn {
+  background-color: #f87171;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  float: right;
+}
+.hide-btn:hover {
+  background-color: #dc2626;
+}
+
+
+
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Project Phases</h2>
+    <a href="dashboard.html">Phase 1: Data Acquisition</a>
+    <a href="phase2.html">Phase 2: Data Modeling</a>
+    <a href="phase3.html" class="active">Phase 3: Automation</a>
+    <a href="phase4.html">Phase 4: Security & Sharing</a>
+    <a href="phase5.html">Phase 5: Visualization</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="navbar">
+      <span>PHASE 3: Incremental Automation (Streams, Tasks & MVs)</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="content">
+
+      <!-- STREAMS SECTION -->
+      <div class="section">
+        <h3>💧 Active Streams <button class="refresh-btn" onclick="loadStreams()">Refresh</button></h3>
+        <div class="table-container">
+          <table id="streams-table"></table>
+        </div>
+         <div id="stream-preview" class="result-container-stream"></div>
+      </div>
+
+     
+
+
+      <!-- TASKS SECTION -->
+      <div class="section">
+        <h3>⚙️ Automated Tasks <button class="refresh-btn" onclick="loadTasks()">Refresh</button></h3>
+        <div id="tasks-container"></div>
+      </div>
+
+      <!-- MATERIALIZED VIEWS SECTION -->
+      <div class="section">
+        <h3>📊 Materialized Views <button class="refresh-btn" onclick="loadMVs()">Refresh</button></h3>
+        <div class="table-container">
+          <table id="mvs-table"></table>
+        </div>
+        <div id="mv-preview" class="result-container-mv"></div>
+       
+
+      </div>
+
+      
+
+
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("You have been logged out!");
+      window.location.href = "/";
+    }
+
+    // --- STREAMS ---
+    async function loadStreams() {
+      const res = await fetch("/api/show-streams");
+      const data = await res.json();
+      const tbl = document.getElementById("streams-table");
+      if (!data.length) { tbl.innerHTML = "<tr><td>No Streams Found</td></tr>";
+       return; }
+
+      const headers = ["name","table_name","schema_name","created_on","stale","mode"];
+      tbl.innerHTML = "<tr>" + headers.map(h=>`<th>${h.toUpperCase()}</th>`).join("") + "</tr>";
+      data.forEach(row => {
+    const nameCell = `<td class="clickable" onclick="previewStream('${row.name}')">${row.name}</td>`;
+    const rowHtml = "<tr>" + headers.map(h => (h === "name" ? nameCell : `<td>${row[h] || "--"}</td>`)).join("") + "</tr>";
+    tbl.innerHTML += rowHtml;
+  });
+    }
+
+    // --- TASKS ---
+    async function loadTasks() {
+      const res = await fetch("/api/show-tasks");
+      const data = await res.json();
+      const container = document.getElementById("tasks-container");
+      container.innerHTML = "";
+      if (!data.length) { container.innerHTML = "<p>No tasks found</p>"; return; }
+
+      data.forEach(task=>{
+        const card = document.createElement("div");
+        card.className = "task-card";
+        card.innerHTML = `
+  <p><strong>Task Name:</strong> ${task.name}</p>
+  <p><strong>Warehouse:</strong> ${task.warehouse}</p>
+  <p><strong>Schedule:</strong> ${task.schedule}</p>
+  <p><strong>State:</strong> 
+    <span class="${task.state==='started'?'status-running':
+                  task.state==='suspended'?'status-failed':'status-success'}">
+      ${task.state}
+    </span>
+  </p>
+  <p><strong>Last Run:</strong> ${task.last_run}</p>
+  <p><strong>Owner:</strong> ${task.owner}</p>
+  <button class="refresh-btn" onclick="showTaskHistory('${task.name}')">View History</button>
+  <div id="history-${task.name}" class="task-history"></div>
+`;
+
+        container.appendChild(card);
+      });
+    }
+
+    async function showTaskHistory(taskName) {
+      const res = await fetch(`/api/task-history/${taskName}`);
+      const data = await res.json();
+      const div = document.getElementById(`history-${taskName}`);
+      if (!data.length) { div.innerHTML = "<p>No history found.</p>"; return; }
+
+      let html = "<div class='table-container'><table><tr><th>Start Time</th><th>State</th><th>Rows</th><th>Message</th></tr>";
+      data.forEach(h=>{
+        html += `<tr>
+  <td>${h.SCHEDULED_TIME}</td>
+  <td>${h.STATE}</td>
+  <td>${h.QUERY_TEXT ? h.QUERY_TEXT.substring(0, 40) + "..." : "--"}</td>
+  <td>${h.ERROR_MESSAGE || "--"}</td>
+  <td>${h.COMPLETED_TIME || "--"}</td>
+</tr>`;
+      });
+      html += "</table></div>";
+      div.innerHTML = html;
+    }
+
+    // --- MATERIALIZED VIEWS ---
+    async function loadMVs() {
+  const res = await fetch("/api/show-mvs");
+  const data = await res.json();
+  const tbl = document.getElementById("mvs-table");
+  if (!data.length) { 
+    tbl.innerHTML = "<tr><td>No Materialized Views Found</td></tr>"; 
+    return; 
+  }
+
+  const headers = ["name", "schema_name", "created_on", "rows","refreshed_on"];
+  tbl.innerHTML = "<tr>" + headers.map(h => `<th>${h.replace(/_/g, ' ').toUpperCase()}</th>`).join("") + "</tr>";
+
+data.forEach(row => {
+   const nameCell = `<td class="clickable" onclick="previewMV('${row.name}')">${row.name}</td>`;
+    const rowHtml = "<tr>" + headers.map(h => (h === "name" ? nameCell : `<td>${row[h] || "--"}</td>`)).join("") + "</tr>";
+    tbl.innerHTML += rowHtml;
+  });
+}
+
+
+    // Load all on start
+    loadStreams();
+    loadTasks();
+    loadMVs();
+
+// --- STREAM PREVIEW ---
+async function previewStream(name) {
+  const container = document.getElementById("stream-preview");
+  container.innerHTML = `
+    <h4>🔍 Stream Data Preview: ${name}
+      <button class="hide-btn" onclick="hidePreview('stream-preview')">Hide</button>
+    </h4>
+    <p>Loading...</p>
+  `;
+  const res = await fetch(`/api/preview-stream/${name}`);
+  if (!res.ok) {
+    container.innerHTML += `<p style="color:red;">Error fetching stream data.</p>`;
+    return;
+  }
+  const data = await res.json();
+  renderPreviewTable(container, data);
+}
+
+// --- MV PREVIEW ---
+async function previewMV(name) {
+  const container = document.getElementById("mv-preview");
+  container.innerHTML = `
+    <h4>🔍 MV Data Preview: ${name}
+      <button class="hide-btn" onclick="hidePreview('mv-preview')">Hide</button>
+    </h4>
+    <p>Loading...</p>
+  `;
+  const res = await fetch(`/api/preview-mv/${name}`);
+  if (!res.ok) {
+    container.innerHTML += `<p style="color:red;">Error fetching MV data.</p>`;
+    return;
+  }
+  const data = await res.json();
+  renderPreviewTable(container, data);
+}
+
+// --- RENDER PREVIEW TABLE (common) ---
+function renderPreviewTable(container, data) {
+  if (!data.length) {
+    container.innerHTML += "<p>No rows found in this object.</p>";
+    return;
+  }
+  const headers = Object.keys(data[0]);
+  let html = `
+    <div class="table-container">
+      <table>
+        <tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
+        ${data.map(row => `<tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>`).join("")}
+      </table>
+    </div>`;
+  container.innerHTML += html;
+}
+
+// --- HIDE PREVIEW FUNCTION ---
+function hidePreview(id) {
+  const el = document.getElementById(id);
+  el.innerHTML = "";
+  // Scroll back to the top of the related section
+  if (id === "stream-preview") {
+    document.querySelector("h3").scrollIntoView({ behavior: "smooth" });
+  } else if (id === "mv-preview") {
+    document.querySelector("h3:nth-of-type(3)").scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+
+  </script>
+</body>
+</html>

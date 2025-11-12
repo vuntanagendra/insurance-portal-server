@@ -194,7 +194,39 @@
   .run-query-btn:hover {
     background-color: #2563eb;
   }
+  
+  .popup-content {
+    background-color: white;
+    padding: 25px 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease;
+  }
 
+  .popup-content p {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+  }
+
+  .popup-content button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .popup-content button:hover {
+    background-color: #0056b3;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
   </style>
 </head>
 
@@ -236,6 +268,14 @@
       <textarea id="custom-sql" placeholder="Enter your SQL query here (e.g. SELECT * FROM DIMCUSTOMER LIMIT 10);" rows="3"></textarea>
       <button class="run-query-btn" onclick="runCustomQuery()">▶️ Run Query</button>
     </div>
+    <!-- Styled popup box -->
+    <div id="popup" class="popup">
+      <div class="popup-content">
+      <p id="popup-message"></p>
+      <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
       <div class="table-container">
         <table id="result-table"></table>
       </div>
@@ -309,43 +349,57 @@
     }
   });
 
-  async function runCustomQuery() {
-    const sql = document.getElementById('custom-sql').value.trim();
-    if (!sql) {
-      alert("Please enter a SQL query!");
+  function showPopup(message) {
+  document.getElementById('popup-message').textContent = message;
+  document.getElementById('popup').style.display = 'flex';
+}
+
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+
+async function runCustomQuery() {
+  const sql = document.getElementById('custom-sql').value.trim();
+  if (!sql) {
+    showPopup("⚠️ Please enter a SQL query!");
+    return;
+  }
+
+  // ✅ Only allow SELECT queries on client-side too
+  if (!/^select\s+/i.test(sql)) {
+    showPopup("❌ Only SELECT queries are allowed for security reasons!");
+    return;
+  }
+
+  try {
+    const res = await fetch('/run-custom-query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: sql })
+    });
+
+    const data = await res.json();
+
+    const table = document.getElementById('result-table');
+    table.innerHTML = '';
+
+    if (!data || data.length === 0) {
+      table.innerHTML = '<tr><td>No results found.</td></tr>';
       return;
     }
 
-    try {
-      const res = await fetch('/run-custom-query', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: sql })
-      });
+    // Dynamically create table headers and rows
+    const headers = Object.keys(data[0]);
+    const headerRow = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+    const rows = data.map(row => `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`).join('');
+    table.innerHTML = headerRow + rows;
 
-      const data = await res.json();
-
-      const table = document.getElementById('result-table');
-      table.innerHTML = '';
-
-      if (!data || data.length === 0) {
-        table.innerHTML = '<tr><td>No results found.</td></tr>';
-        return;
-      }
-
-      const headers = Object.keys(data[0]);
-      const headerRow = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
-      const rows = data.map(row =>
-        `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`
-      ).join('');
-
-      table.innerHTML = headerRow + rows;
-    } catch (err) {
-      console.error(err);
-      alert("Error executing query.");
-    }
+  } catch (err) {
+    showPopup("⚠️ Error running query: " + err.message);
   }
+}
 
   </script>
 </body>
 </html>
+

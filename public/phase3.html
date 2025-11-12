@@ -172,6 +172,20 @@
   background-color: #dc2626;
 }
 
+.task-toggle-btn {
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+.resume-btn { background-color: #16a34a; }  /* green */
+.suspend-btn { background-color: #dc2626; } /* red */
+.task-toggle-btn:hover { opacity: 0.9; }
+
+
 
 
   </style>
@@ -278,7 +292,15 @@
   </p>
   <p><strong>Last Run:</strong> ${task.last_run}</p>
   <p><strong>Owner:</strong> ${task.owner}</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
   <button class="refresh-btn" onclick="showTaskHistory('${task.name}')">View History</button>
+  <button 
+    class="task-toggle-btn ${task.state==='suspended' ? 'resume-btn' : 'suspend-btn'}"
+    onclick="toggleTaskState('${task.name}', '${task.state}')">
+    ${task.state==='suspended' ? '🟢 Resume' : '🔴 Suspend'}
+  </button>
+</div>
+
   <div id="history-${task.name}" class="task-history"></div>
 `;
 
@@ -305,6 +327,20 @@
       html += "</table></div>";
       div.innerHTML = html;
     }
+    async function toggleTaskState(taskName, currentState) {
+  const action = currentState === 'suspended' ? 'resume' : 'suspend';
+  const confirmAction = confirm(`Are you sure you want to ${action.toUpperCase()} the task "${taskName}"?`);
+  if (!confirmAction) return;
+
+  const res = await fetch(`/api/task-${action}/${taskName}`, { method: 'POST' });
+  if (res.ok) {
+    alert(`Task "${taskName}" ${action}d successfully!`);
+    loadTasks();  // Refresh task list
+  } else {
+    alert(`Failed to ${action} task "${taskName}".`);
+  }
+}
+
 
     // --- MATERIALIZED VIEWS ---
     async function loadMVs() {
@@ -401,3 +437,4 @@ function hidePreview(id) {
   </script>
 </body>
 </html>
+

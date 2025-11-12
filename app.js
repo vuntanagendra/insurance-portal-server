@@ -572,6 +572,32 @@ app.get('/api/preview-stream/:name', (req, res) => {
   });
 });
 
+  // Resume a suspended task
+app.post("/api/task-resume/:taskName", async (req, res) => {
+  const taskName = req.params.taskName;
+  try {
+    const sql = `ALTER TASK INSURANCE_GROUP_DB.INSURANCE_SCHEMA_FACT_TABLES.${taskName} RESUME;`;
+    await runQuery(sql);
+    res.send({ message: `Task ${taskName} resumed successfully` });
+  } catch (err) {
+    console.error("❌ Error resuming task:", err);
+    res.status(500).send({ error: err.message });
+  }
+});
+
+// Suspend a running task
+app.post("/api/task-suspend/:taskName", async (req, res) => {
+  const taskName = req.params.taskName;
+  try {
+    const sql = `ALTER TASK INSURANCE_GROUP_DB.INSURANCE_SCHEMA_FACT_TABLES.${taskName} SUSPEND;`;
+    await runQuery(sql);
+    res.send({ message: `Task ${taskName} suspended successfully` });
+  } catch (err) {
+    console.error("❌ Error suspending task:", err);
+    res.status(500).send({ error: err.message });
+  }
+});
+
 //------------------------------------------------------
 // 🔹 Preview Materialized View Data
 //------------------------------------------------------
@@ -889,4 +915,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 

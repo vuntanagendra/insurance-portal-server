@@ -336,8 +336,30 @@ function runQuery(query) {
   });
 }
 
+// app.post('/run-custom-query', (req, res) => {
+//   const sql = req.body.query;
+//   connection.execute({
+//     sqlText: sql,
+//     complete: (err, stmt, rows) => {
+//       if (err) {
+//         res.status(400).json({ error: err.message });
+//       } else {
+//         res.json(rows);
+//       }
+//     }
+//   });
+// });
+
 app.post('/run-custom-query', (req, res) => {
-  const sql = req.body.query;
+  const sql = req.body.query.trim();
+
+  // ✅ Only allow SELECT queries
+  if (!/^select\s+/i.test(sql)) {
+    return res.status(400).json({ 
+      error: 'Only SELECT queries are allowed for security reasons.' 
+    });
+  }
+
   connection.execute({
     sqlText: sql,
     complete: (err, stmt, rows) => {
@@ -349,6 +371,7 @@ app.post('/run-custom-query', (req, res) => {
     }
   });
 });
+
 
 // Universal dynamic SQL executor (used by Phase 4 Masking Preview)
 app.post('/run-query', (req, res) => {
@@ -866,3 +889,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+

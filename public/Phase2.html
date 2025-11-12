@@ -399,7 +399,23 @@ async function runCustomQuery() {
   }
 }
 
+    // async function runCustomQuery() { 
+    //   const sql = document.getElementById('custom-sql').value.trim(); 
+    //   if (!sql) { alert("Please enter a SQL query!"); return; } 
+    //   try { const res = await fetch('/run-custom-query', { 
+    //     method: 'POST', 
+    //     headers: { 'Content-Type': 'application/json' }, 
+    //     body: JSON.stringify({ query: sql }) }); 
+    //     const data = await res.json(); 
+    //     const table = document.getElementById('result-table'); 
+    //     table.innerHTML = ''; 
+    //     if (!data || data.length === 0) { 
+    //       table.innerHTML = '<tr><td>No results found.</td></tr>'; 
+    //       return; 
+    //     }
+
   </script>
 </body>
 </html>
+
 

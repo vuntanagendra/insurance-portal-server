@@ -5,46 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <style>
+        /* Background with overlay */
         body {
             margin: 0;
             padding: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), /* dark overlay */
+                url('bg_img.jpeg') no-repeat center center fixed;
+            background-size: cover;
         }
+
+        /* Login container */
         .login-container {
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             width: 320px;
             padding: 20px;
             text-align: center;
         }
-        .login-header {
-            margin-bottom: 20px;
+
+        .login-header h1 {
+            color: #222;
+            font-size: 1.3em;
+            margin-bottom: 15px;
         }
+
         .login-image img {
-            width: 100%;
+            width: 130px;
             height: auto;
             margin-bottom: 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
         }
-        .login-form h2 {
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            color: #333;
-        }
+
         .form-group {
             margin-bottom: 15px;
             text-align: left;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #333;
         }
+
         .form-group input {
             width: calc(100% - 20px);
             padding: 10px;
@@ -52,18 +64,22 @@
             border-radius: 5px;
             font-size: 1em;
         }
+
         .password-wrapper {
             display: flex;
             align-items: center;
         }
+
         .password-wrapper input {
             flex-grow: 1;
             border-right: none;
         }
+
         .password-wrapper .toggle-password {
             padding: 10px;
             cursor: pointer;
         }
+
         .login-btn {
             background-color: #007BFF;
             color: #fff;
@@ -72,31 +88,27 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
+            width: 100%;
+            transition: background-color 0.3s ease;
         }
+
         .login-btn:hover {
             background-color: #0056b3;
         }
+
         .register-link {
             margin-top: 15px;
             font-size: 0.9em;
         }
+
         .register-link a {
             color: #007BFF;
             text-decoration: none;
         }
+
         .register-link a:hover {
             text-decoration: underline;
         }
-
-        .login-image img {
-    width: 150px;              /* Resize image to a comfortable size */
-    height: auto;              /* Maintain aspect ratio */
-    margin-bottom: 20px;
-    border-radius: 50%;        /* Makes it circular – optional */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
-    object-fit: cover;         /* Ensures image fills the shape cleanly */
-}
-
     </style>
 </head>
 <body>
@@ -105,10 +117,9 @@
             <h1>Welcome Back Guardian Insurance Group!</h1>
         </div>
         <div class="login-image">
-        <img src="logo.jpg" alt="company logo ">
+            <img src="logo.jpg" alt="Company Logo">
         </div>
         <div class="login-form">
-            <!--<h2>Consultant</h2> -->
             <form action="/login" method="POST">
                 <div class="form-group">
                     <label for="email">Email*</label>
@@ -128,6 +139,7 @@
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const togglePassword = document.querySelector('.toggle-password');
